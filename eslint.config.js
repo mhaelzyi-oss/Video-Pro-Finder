@@ -13,10 +13,10 @@ export default [
         ...globals.node,
         chrome: 'readonly',
         DOMParser: 'readonly',
-        window: 'readonly',
-        document: 'readonly',
+        MutationObserver: 'readonly',
         navigator: 'readonly',
-        MutationObserver: 'readonly'
+        window: 'readonly',
+        document: 'readonly'
       }
     },
     rules: {

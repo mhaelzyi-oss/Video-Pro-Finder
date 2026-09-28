@@ -1,37 +1,41 @@
 # Video Pro Finder
 
-Video Pro Finder is a Manifest V3 browser extension for Chrome and Microsoft Edge. It detects browser-exposed media URLs, analyzes accessible non-protected streams, previews eligible sources, and supports lawful direct downloading for content the user is authorized to save.
+Video Pro Finder is a Manifest V3 Chrome and Microsoft Edge extension for lawfully discovering browser-exposed media, analyzing accessible stream metadata, safeguarding protected media, and supporting direct downloads only for eligible non-protected sources.
 
-## Product overview
+## Overview
 
-The extension is intentionally lawful and privacy-first. It detects direct media, HLS, DASH, captions, and accessible metadata while refusing to bypass protected media, decrypt content, or request DRM licences.
+The extension inspects page-visible media resources, normalizes source metadata, identifies HLS and DASH manifests, evaluates quality options, and enforces lawful user declarations before direct downloads begin. It never bypasses DRM, requests licenses, or decrypts protected media.
 
-## Supported media
+## Supported sources
 
-- Direct video/audio links
-- HLS playlists
+- Direct video and audio files
+- HLS master/media playlists
 - DASH manifests
-- Subtitle sidecars
-- Browser-visible media metadata
+- Subtitle sidecars and captions
+- Browser-exposed direct media URLs
 
 ## Unsupported sources
 
 - DRM-protected media
 - Torrent files and magnet links
-- Access-controlled private streams
-- CORS-blocked or paywalled sources
+- Access-controlled streams behind authentication or signed URLs
+- Protected live streams and encrypted manifests
+
+## Legal and ethics
+
+Users remain responsible for verifying they have authority to save media. Detection does not establish ownership or permission. Non-DRM media is not automatically free to redistribute. Video Pro Finder does not bypass DRM, encryption, authentication, CORS, signed URLs, paywalls, or other access controls.
 
 ## Architecture
 
-- `background.js`: service worker initialization, queue reconciliation, and persistence
-- `content.js`: page scan and message bridge
-- `utils/*.js`: normalization, protection detection, quality logic, parser helpers, download queue, diagnostics, and recovery
-- `popup.html` / `popup.js`: summary and source cards
-- `options.html` / `options.js`: settings and permissions
-- `library.html` / `library.js`: saved source library and watch-later view
-- `resources.html` / `resources.js`: policy, compliance, and diagnostics
+- `background.js`: service worker startup, persistence, queue reconciliation, and download tracking.
+- `content.js`: page scanning and media discovery.
+- `utils/*.js`: storage, parsing, quality logic, protection checks, retry, and diagnostics.
+- `popup.html` and `popup.js`: current-tab summary and source cards.
+- `options.html` and `options.js`: settings, permissions, and local privacy controls.
+- `library.html` and `library.js`: local library and watch-later UI.
+- `resources.html` and `resources.js`: compliance and support info.
 
-## Development
+## Running locally
 
 ```bash
 npm install
@@ -44,19 +48,19 @@ npm run dev
 npm run build
 ```
 
-## Test
+## Testing
 
 ```bash
 npm run test
 npm run test:e2e
 ```
 
-## Package
+## Packaging
 
 ```bash
 npm run package
 ```
 
-## Ethics and legal notice
+## CI
 
-Users are responsible for verifying they have authority to save media. Detection does not establish ownership or permission. Video Pro Finder does not bypass DRM, decryption, authentication, CORS restrictions, signed URLs, paywalls, or access controls. It does not support torrent files or magnet links.
+The GitHub Actions workflow runs format check, lint, unit tests, build, Playwright demo tests, and ZIP packaging.

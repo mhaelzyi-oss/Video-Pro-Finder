@@ -28,6 +28,7 @@ export function buildSourceId(src) {
 export function normalizeSource(input = {}, pageInfo = {}) {
   const src = normalizeUrl(input.src || input.url || input.href, pageInfo.baseUrl || pageInfo.url || globalThis.location?.href || 'https://example.com');
   const streamType = classifyStreamType(src, input.mime || input.type || '');
+
   try {
     const url = new URL(src);
     return {

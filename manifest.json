@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Video Pro Finder",
   "version": "1.0.0",
-  "description": "Lawful browser-exposed media discovery, analysis, and direct-download workflow for eligible sources.",
+  "description": "Lawful browser-exposed media discovery, preview, and direct-download workflow for eligible non-protected sources.",
   "permissions": ["activeTab", "storage", "downloads", "contextMenus", "scripting"],
   "optional_permissions": ["offscreen", "notifications"],
   "host_permissions": [],
@@ -10,20 +10,29 @@
     "default_title": "Video Pro Finder",
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icons/icon-16.svg",
-      "32": "icons/icon-32.svg",
-      "48": "icons/icon-48.svg",
-      "128": "icons/icon-128.svg"
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
     }
   },
-  "background": { "service_worker": "background.js", "type": "module" },
-  "content_scripts": [{ "matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_idle" }],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "options_ui": { "page": "options.html", "open_in_tab": true },
   "web_accessible_resources": [{ "resources": ["icons/*.svg"], "matches": ["<all_urls>"] }],
   "icons": {
-    "16": "icons/icon-16.svg",
-    "32": "icons/icon-32.svg",
-    "48": "icons/icon-48.svg",
-    "128": "icons/icon-128.svg"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   }
 }

@@ -5,8 +5,8 @@ export function getStorage() {
 export async function loadState() {
   const storage = getStorage();
   if (!storage) return { schemaVersion: 1, settings: {}, queue: [], history: [], library: [], presets: [], hostPreferences: {}, diagnostics: [], errorSnapshots: [] };
-  const record = await storage.get(['vpfState']);
-  return record.vpfState || { schemaVersion: 1, settings: {}, queue: [], history: [], library: [], presets: [], hostPreferences: {}, diagnostics: [], errorSnapshots: [] };
+  const result = await storage.get(['vpfState']);
+  return result.vpfState || { schemaVersion: 1, settings: {}, queue: [], history: [], library: [], presets: [], hostPreferences: {}, diagnostics: [], errorSnapshots: [] };
 }
 
 export async function saveState(state) {

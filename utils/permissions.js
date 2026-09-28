@@ -3,11 +3,13 @@ export function getHostPermissions() {
 }
 
 export async function requestHostPermission(origin) {
-  const result = await chrome.permissions.request({ origins: [origin] });
-  return Boolean(result);
+  if (!chrome?.permissions?.request) return false;
+  const granted = await chrome.permissions.request({ origins: [origin] });
+  return Boolean(granted);
 }
 
 export async function removeHostPermission(origin) {
-  const result = await chrome.permissions.remove({ origins: [origin] });
-  return Boolean(result);
+  if (!chrome?.permissions?.remove) return false;
+  const removed = await chrome.permissions.remove({ origins: [origin] });
+  return Boolean(removed);
 }

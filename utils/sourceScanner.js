@@ -1,13 +1,15 @@
+import { normalizeSource } from './sourceNormalizer.js';
+
 export function scanDocument(documentRef = document) {
   const seen = new Map();
   const addSource = (raw) => {
     if (!raw || !raw.src) return;
-    const source = normalizeSource(raw, { title: documentRef.title, url: documentRef.location?.href || location.href, baseUrl: documentRef.location?.href || location.href });
+    const source = normalizeSource(raw, { title: documentRef.title, url: documentRef.location?.href || globalThis.location?.href, baseUrl: documentRef.location?.href || globalThis.location?.href });
     if (!seen.has(source.canonicalUrl)) seen.set(source.canonicalUrl, source);
   };
 
   documentRef.querySelectorAll('video, audio, source, track, a').forEach((element) => {
-    const candidates = [
+    const values = [
       element.getAttribute('src'),
       element.getAttribute('href'),
       element.getAttribute('data-src'),
@@ -15,14 +17,16 @@ export function scanDocument(documentRef = document) {
       element.getAttribute('data-stream-url'),
       element.getAttribute('data-url')
     ];
-    for (const value of candidates) {
-      if (value) addSource({ src: value, mime: element.getAttribute('type'), label: element.getAttribute('title') || element.textContent || documentRef.title });
+    for (const value of values) {
+      if (value) {
+        addSource({ src: value, mime: element.getAttribute('type'), label: element.getAttribute('title') || element.textContent || documentRef.title });
+      }
     }
   });
 
   documentRef.querySelectorAll('meta[property]').forEach((meta) => {
     const property = meta.getAttribute('property');
-    if (/og:(video|audio)/.test(property) || /og:video/.test(property) || /og:audio/.test(property)) {
+    if (/og:(video|audio)/.test(property || '')) {
       const content = meta.getAttribute('content');
       if (content) addSource({ src: content, label: documentRef.title });
     }
@@ -33,12 +37,8 @@ export function scanDocument(documentRef = document) {
 
 export function installScanner(onSources) {
   const run = () => onSources(scanDocument());
-  const observer = new MutationObserver(() => {
-    run();
-  });
+  const observer = new MutationObserver(() => run());
   observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
   run();
   return observer;
 }
-
-import { normalizeSource } from './sourceNormalizer.js';
