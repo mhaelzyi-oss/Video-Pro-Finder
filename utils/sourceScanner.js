@@ -1,10 +1,44 @@
-import { normalizeSource } from './sourceNormalizer.js';
+export function scanDocument(documentRef = document) {
+  const seen = new Map();
+  const addSource = (raw) => {
+    if (!raw || !raw.src) return;
+    const source = normalizeSource(raw, { title: documentRef.title, url: documentRef.location?.href || location.href, baseUrl: documentRef.location?.href || location.href });
+    if (!seen.has(source.canonicalUrl)) seen.set(source.canonicalUrl, source);
+  };
 
-const ATTRS = ['src', 'href', 'data-src', 'data-video-url', 'data-stream-url'];
-export function scanDocument(doc = document) {
-  const found = new Map(); const add = (item) => { const source = normalizeSource(item, { title: doc.title, url: doc.location?.href }); if (source.src && !found.has(source.canonicalUrl)) found.set(source.canonicalUrl, source); };
-  doc.querySelectorAll('video, audio, source, track, a').forEach((element) => { ATTRS.forEach((attr) => { const value = element.getAttribute(attr); if (value) add({ src: value, type: element.getAttribute('type'), label: element.getAttribute('title') }); }); });
-  doc.querySelectorAll('meta[property^="og:"]').forEach((meta) => { if (/og:(video|audio)(:url|:secure_url)?/.test(meta.getAttribute('property'))) add({ src: meta.content, label: doc.title }); });
-  return [...found.values()];
+  documentRef.querySelectorAll('video, audio, source, track, a').forEach((element) => {
+    const candidates = [
+      element.getAttribute('src'),
+      element.getAttribute('href'),
+      element.getAttribute('data-src'),
+      element.getAttribute('data-video-url'),
+      element.getAttribute('data-stream-url'),
+      element.getAttribute('data-url')
+    ];
+    for (const value of candidates) {
+      if (value) addSource({ src: value, mime: element.getAttribute('type'), label: element.getAttribute('title') || element.textContent || documentRef.title });
+    }
+  });
+
+  documentRef.querySelectorAll('meta[property]').forEach((meta) => {
+    const property = meta.getAttribute('property');
+    if (/og:(video|audio)/.test(property) || /og:video/.test(property) || /og:audio/.test(property)) {
+      const content = meta.getAttribute('content');
+      if (content) addSource({ src: content, label: documentRef.title });
+    }
+  });
+
+  return Array.from(seen.values());
 }
-export function installScanner(onSources) { let timer; const run = () => { clearTimeout(timer); timer = setTimeout(() => onSources(scanDocument()), 150); }; run(); new MutationObserver(run).observe(document.documentElement, { childList: true, subtree: true }); return run; }
+
+export function installScanner(onSources) {
+  const run = () => onSources(scanDocument());
+  const observer = new MutationObserver(() => {
+    run();
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
+  run();
+  return observer;
+}
+
+import { normalizeSource } from './sourceNormalizer.js';
