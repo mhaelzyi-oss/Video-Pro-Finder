@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Video Pro Finder",
+  "version": "1.0.0",
+  "description": "Lawful discovery of browser-exposed, non-protected media.",
+  "permissions": ["activeTab", "storage", "downloads", "contextMenus", "scripting"],
+  "host_permissions": [],
+  "action": {"default_title": "Video Pro Finder", "default_popup": "popup.html"},
+  "background": {"service_worker": "background.js", "type": "module"},
+  "content_scripts": [{"matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_idle"}],
+  "options_ui": {"page": "options.html", "open_in_tab": true}
+}
